@@ -28,12 +28,12 @@ func main() {
 		Usage()
 	}
 
-	digitsFlag = flag.Int("d", 3, "Number of digits to append")
-	wordsFlag = flag.Int("w", 3, "Number of words in the phrase")
-	versionFlag = flag.Bool("v", false, "Print version information and exit")
-	helpFlag = flag.Bool("h", false, "Print usage and exit")
-	countFlag = flag.Bool("c", false, "Show character count")
-	nameFlag = flag.Bool("n", false, "Use a name in the phrase")
+	digitsFlag     = flag.Int("d", 3, "Number of digits to append")
+	wordsFlag      = flag.Int("w", 3, "Number of words in the phrase")
+	versionFlag    = flag.Bool("v", false, "Print version information and exit")
+	helpFlag       = flag.Bool("h", false, "Print usage and exit")
+	countFlag      = flag.Bool("c", false, "Show character count")
+	nameFlag       = flag.Bool("n", false, "Use a name in the phrase")
 	underscoreFlag = flag.Bool("u", false, "Use underscores instead of dashes")
 	flag.Parse()
 
@@ -48,11 +48,11 @@ func main() {
 func run() error { 
 
 
-	if *wordsFlag < 1 {
+	if *wordsFlag < 1 || *wordsFlag > 20 {
 		return fmt.Errorf("number of words must be at least 1")
 	}
 
-	if *digitsFlag < 1 {
+	if *digitsFlag < 1 || *digitsFlag > 999 {
 		return fmt.Errorf("number of digits must be at least 1")
 	}
 
@@ -92,12 +92,12 @@ func run() error {
 	}
 
 	fmt.Println(dashphrase)
-
 	return nil
 }
 
 // Generate a dash-separated passphrase with specified number of words and digits
 func getDashPhrase(words int, digits int) (string, error) {
+
 	if words < 1 || words > 20 {
 		return "", fmt.Errorf("number of words must be between 1 and 20")
 	}
