@@ -10,7 +10,7 @@ import (
 "github.com/wordgen/wordlists"
 )
 
-const version = "0.1.2"
+const version = "0.1.3"
 
 var (
 	digitsFlag     *int 
@@ -66,12 +66,19 @@ func run() error {
 		return nil
 	}
 
-	var dashphrase string
+	var (
+		dashphrase string
+		err        error
+	)
 
 	if *nameFlag {
-		dashphrase = getNamedDashPhrase(*wordsFlag, *digitsFlag)
+		dashphrase, err = getNamedDashPhrase(*wordsFlag, *digitsFlag)
 	} else {
-		dashphrase = getDashPhrase(*wordsFlag, *digitsFlag)
+		dashphrase, err = getDashPhrase(*wordsFlag, *digitsFlag)
+	}
+
+	if err != nil {
+		return err
 	}
 
 	if *countFlag {
@@ -90,32 +97,64 @@ func run() error {
 }
 
 // Generate a dash-separated passphrase with specified number of words and digits
-func getDashPhrase(words int, digits int) string {
-	phrase := getPhrase(words)
-	phrase += "-" + getNum(digits)
-	return phrase
+func getDashPhrase(words int, digits int) (string, error) {
+	if words < 1 || words > 20 {
+		return "", fmt.Errorf("number of words must be between 1 and 20")
+	}
+	phrase, err := getPhrase(words)
+	if err != nil {
+		return "", err
+	}
+
+	number, e := getNum(digits)
+	if e != nil {
+		return "", e
+	}
+	phrase += "-" + number
+	return phrase, nil
 }
 
 // Generate a dash-separated passphrase with a name, specified number of words and digits
-func getNamedDashPhrase(words int, digits int) string {
-	phrase := getNamedPhrase(words)
-	phrase += "-" + getNum(digits)
-	return phrase
+func getNamedDashPhrase(words int, digits int) (string, error) {
+	if words < 1 || words > 20 {
+		return "", fmt.Errorf("number of words must be between 1 and 20")
+	}
+
+	phrase, err := getNamedPhrase(words)
+	if err != nil {
+		return "", err
+	}
+
+	number, e := getNum(digits)
+	if e != nil {
+		return "", e
+	}
+	phrase += "-" + number
+	return phrase, nil
 }
 
 
 // Generate a string of random digits of specified length
-func getNum(digits int) string {
+func getNum(digits int) (string, error) {
+
+	if digits < 1 || digits > 999 {
+		return "", fmt.Errorf("number of digits must be between 1 and 20")
+	}
+
 	num := ""
 	for i := 0; i < digits; i++ {
 		digit := rand.Intn(10)
 		num += fmt.Sprintf("%d", digit)
 	}
-	return num
+	return num, nil
 }
 
 // Generate a dash-separated phrase with specified number of words
-func getPhrase(words int ) string {
+func getPhrase(words int ) (string, error) {
+	if words < 1 || words > 20 {
+		return "", fmt.Errorf("number of words must be between 1 and 20")
+	}
+
 	phrase := ""
 	for i := 0; i < words; i++ {
 		if i > 0 {
@@ -123,13 +162,22 @@ func getPhrase(words int ) string {
 		}
 		phrase += getWord()
 	}
-	return phrase
+	return phrase, nil
 }
 
 // Generate a dash-separated phrase starting with a name followed by specified number of words
-func getNamedPhrase(words int) string {
-	phrase := getName() + "-" + getPhrase(words-1)
-	return phrase
+func getNamedPhrase(words int) (string, error) {
+	if words < 1 || words > 20 {
+		return "", fmt.Errorf("number of words must be between 1 and 20")
+	}
+
+	phrase, err := getPhrase(words - 1)
+	if err != nil {
+		return "", err
+	}
+
+	named_phrase := getName() + "-" + phrase
+	return named_phrase, nil
 }
 
 // Get a random word from the wordlist

@@ -163,7 +163,11 @@ func TestWrongFlag(t *testing.T) {
 // unit tests
 
 func TestGetDigits(t *testing.T) {
-	digits := getNum(4)
+	digits, err := getNum(4)
+	if err != nil {
+		t.Errorf("expected no error, got %v", err)
+	}
+
 	if len(digits) != 4 {
 		t.Errorf("expected 4 digits, got %d", len(digits))
 	}
@@ -174,8 +178,23 @@ func TestGetDigits(t *testing.T) {
 	}
 }
 
+func TestGetDigitsInvalid(t *testing.T) {
+	_, err := getNum(0)
+	if err == nil {
+		t.Errorf("expected error for 0 digits, got nil")
+	}
+
+	_, err = getNum(-3)
+	if err == nil {
+		t.Errorf("expected error for negative digits, got nil")
+	}
+}
+
 func TestGetDashPhrase(t *testing.T) {
-	phrase := getDashPhrase(3, 2)
+	phrase, err := getDashPhrase(3, 2)
+	if err != nil {
+		t.Errorf("expected no error, got %v", err)
+	}
 	parts := strings.Split(phrase, "-")
 	if len(parts) != 4 {
 		t.Errorf("expected 4 parts separated by dash, got %d", len(parts))
@@ -192,8 +211,24 @@ func TestGetDashPhrase(t *testing.T) {
 	}
 }
 
+func TestGetDashPhraseInvalid(t *testing.T) {
+	_, err := getDashPhrase(0, 2)
+	if err == nil {
+		t.Errorf("expected error for 0 words, got nil")
+	}
+
+	_, err = getDashPhrase(3, 0)
+	if err == nil {
+		t.Errorf("expected error for 0 digits, got nil")
+	}
+}
+
 func TestGetNamedDashPhrase(t *testing.T) {
-	phrase := getNamedDashPhrase(2, 3)
+	phrase, err := getNamedDashPhrase(2, 3)
+	if err != nil {
+		t.Errorf("expected no error, got %v", err)
+	}
+
 	parts := strings.Split(phrase, "-")
 	if len(parts) != 3 {
 		t.Errorf("expected 3 parts separated by dash, got %d", len(parts))
@@ -210,19 +245,63 @@ func TestGetNamedDashPhrase(t *testing.T) {
 	}
 }
 
+func TestGetNamedDashPhraseInvalid(t *testing.T) {
+	_, err := getNamedDashPhrase(0, 2)
+	if err == nil {
+		t.Errorf("expected error for 0 words, got nil")
+	}
+
+	_, err = getNamedDashPhrase(3, 0)
+	if err == nil {
+		t.Errorf("expected error for 0 digits, got nil")
+	}
+}
+
 func TestGetPhrase(t *testing.T) {
-	phrase := getPhrase(5)
+	phrase, err := getPhrase(5)
+	if err != nil {
+		t.Errorf("expected no error, got %v", err)
+	}
 	words := strings.Split(phrase, "-")
 	if len(words) != 5 {
 		t.Errorf("expected 5 words, got %d", len(words))
 	}
 }
 
+func TestGetPhraseInvalid(t *testing.T) {
+	_, err := getPhrase(0)
+	if err == nil {
+		t.Errorf("expected error for 0 words, got nil")
+	}
+
+	_, err = getPhrase(-2)
+	if err == nil {
+		t.Errorf("expected error for negative words, got nil")
+	}
+}
+
+
 func TestGetNamedPhrase(t *testing.T) {
-	phrase := getNamedPhrase(4)
+	phrase, err := getNamedPhrase(4)
+	if err != nil {
+		t.Errorf("expected no error, got %v", err)
+	}
+
 	words := strings.Split(phrase, "-")
 	if len(words) != 4 {
 		t.Errorf("expected 4 words, got %d", len(words))
+	}
+}
+
+func TestGetNamedPhraseInvalid(t *testing.T) {
+	_, err := getNamedPhrase(0)
+	if err == nil {
+		t.Errorf("expected error for 0 words, got nil")
+	}
+
+	_, err = getNamedPhrase(-5)
+	if err == nil {
+		t.Errorf("expected error for negative words, got nil")
 	}
 }
 
