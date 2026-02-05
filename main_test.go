@@ -148,7 +148,6 @@ func TestDigits(t *testing.T) {
 	}
 }
 
-
 func TestWrongFlag(t *testing.T) {
 	cmd := exec.Command(cmdPath, "-wrong")
 	var out bytes.Buffer
@@ -158,5 +157,85 @@ func TestWrongFlag(t *testing.T) {
 	expected := "Usage:"
 	if !strings.Contains(out.String(), expected) {
 		t.Errorf("expected to contain %q, got %q", expected, out.String())
+	}
+}
+
+// unit tests
+
+func TestGetDigits(t *testing.T) {
+	digits := getNum(4)
+	if len(digits) != 4 {
+		t.Errorf("expected 4 digits, got %d", len(digits))
+	}
+	for _, r := range digits {
+		if !unicode.IsDigit(r) {
+			t.Errorf("expected digit, got %q", r)
+		}
+	}
+}
+
+func TestGetDashPhrase(t *testing.T) {
+	phrase := getDashPhrase(3, 2)
+	parts := strings.Split(phrase, "-")
+	if len(parts) != 4 {
+		t.Errorf("expected 4 parts separated by dash, got %d", len(parts))
+	}
+	// make sure first 3 parts are words
+	for i := 0; i < 3; i++ {
+		if len(parts[i]) == 0 {
+			t.Errorf("expected non-empty word at part %d", i)
+		}
+	}
+	// make sure last part is 2 digits
+	if len(parts[3]) != 2 {
+		t.Errorf("expected 2 digits, got %d", len(parts[3]))
+	}
+}
+
+func TestGetNamedDashPhrase(t *testing.T) {
+	phrase := getNamedDashPhrase(2, 3)
+	parts := strings.Split(phrase, "-")
+	if len(parts) != 3 {
+		t.Errorf("expected 3 parts separated by dash, got %d", len(parts))
+	}
+	// make sure first 2 parts are words
+	for i := 0; i < 2; i++ {
+		if len(parts[i]) == 0 {
+			t.Errorf("expected non-empty word at part %d", i)
+		}
+	}
+	// make sure last part is 3 digits
+	if len(parts[2]) != 3 {
+		t.Errorf("expected 3 digits, got %d", len(parts[2]))
+	}
+}
+
+func TestGetPhrase(t *testing.T) {
+	phrase := getPhrase(5)
+	words := strings.Split(phrase, "-")
+	if len(words) != 5 {
+		t.Errorf("expected 5 words, got %d", len(words))
+	}
+}
+
+func TestGetNamedPhrase(t *testing.T) {
+	phrase := getNamedPhrase(4)
+	words := strings.Split(phrase, "-")
+	if len(words) != 4 {
+		t.Errorf("expected 4 words, got %d", len(words))
+	}
+}
+
+func TestGetWord(t *testing.T) {
+	word := getWord()
+	if len(word) == 0 {
+		t.Errorf("expected non-empty word")
+	}
+}
+
+func TestGetName(t *testing.T) {
+	name := getName()
+	if len(name) == 0 {
+		t.Errorf("expected non-empty name")
 	}
 }
