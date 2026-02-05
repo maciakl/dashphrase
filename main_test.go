@@ -239,3 +239,209 @@ func TestGetName(t *testing.T) {
 		t.Errorf("expected non-empty name")
 	}
 }
+
+func TestVersion(t *testing.T) {
+	output := captureOutput(Version)
+	if !strings.Contains(output, "version") {
+		t.Errorf("expected output to contain 'version', got %q", output)
+	}
+}
+
+func TestUsage(t *testing.T) {
+	output := captureOutput(Usage)
+	if !strings.Contains(output, "Usage:") {
+		t.Errorf("expected output to contain 'Usage:', got %q", output)
+	}
+}
+
+// captureOutput captures the output of a function that prints to stdout.
+func captureOutput(f func()) string {
+
+	old := os.Stdout
+	old_err := os.Stderr
+	r, w, _ := os.Pipe()
+	os.Stdout = w
+	os.Stderr = w
+
+
+	f()
+
+	w.Close()
+	os.Stdout = old
+	os.Stderr = old_err
+
+	var buf bytes.Buffer
+	buf.ReadFrom(r)
+	return buf.String()
+}
+
+func captureOutputWithError(f func() error) (string, error) {
+
+	old := os.Stdout
+	old_err := os.Stderr
+	r, w, _ := os.Pipe()
+	os.Stdout = w
+	os.Stderr = w
+
+
+	err := f()
+
+	w.Close()
+	os.Stdout = old
+	os.Stderr = old_err
+
+	var buf bytes.Buffer
+	buf.ReadFrom(r)
+	return buf.String(), err
+}
+
+
+func TestRun(t *testing.T) {
+
+		// default flags
+		nm3 := 3
+		nm0 := 0
+		blf := false
+		blt := true
+
+		digitsFlag = &nm3
+		wordsFlag = &nm3
+		versionFlag = &blf
+		helpFlag = &blf
+		countFlag = &blf
+		nameFlag = &blf
+		underscoreFlag = &blf
+
+	t.Run("NoArgs", func(t *testing.T) {
+
+
+		output,err := captureOutputWithError(run)
+		if err != nil {
+			t.Errorf("expected no error, got %v", err)
+		}
+		if !strings.Contains(output, "-") {
+			t.Errorf("expected output to contain '-', got %q", output)
+		}
+	})
+
+	t.Run("InvalidWords", func(t *testing.T) {
+
+		wordsFlag = &nm0
+
+		output,err := captureOutputWithError(run)
+		if err == nil {
+			t.Errorf("expected error, got nil")
+		}
+		if !strings.Contains(err.Error(), "number of words must be at least 1") {
+			t.Errorf("expected error to contain 'number of words must be at least 1', got %q", err.Error())
+		}
+		if !strings.Contains(output, "") {
+			t.Errorf("expected output to be empty, got %q", output)
+		}
+	})
+
+	t.Run("InvalidDigits", func(t *testing.T) {
+
+		wordsFlag = &nm3
+		digitsFlag = &nm0
+
+		output,err := captureOutputWithError(run)
+		if err == nil {
+			t.Errorf("expected error, got nil")
+		}
+		if !strings.Contains(err.Error(), "number of digits must be at least 1") {
+			t.Errorf("expected error to contain 'number of digits must be at least 1', got %q", err.Error())
+		}
+		if !strings.Contains(output, "") {
+			t.Errorf("expected output to be empty, got %q", output)
+		}
+	})
+
+	t.Run("VersionFlag", func(t *testing.T) {
+
+		versionFlag = &blt
+		helpFlag = &blf
+		digitsFlag = &nm3
+		wordsFlag = &nm3
+
+		output,err := captureOutputWithError(run)
+		if err != nil {
+			t.Errorf("expected no error, got %v", err)
+		}
+		if !strings.Contains(output, "version") {
+			t.Errorf("expected output to contain 'version', got %q", output)
+		}
+	})
+
+	t.Run("CountFlag", func(t *testing.T) {
+
+		versionFlag = &blf
+		helpFlag = &blf
+		digitsFlag = &nm3
+		wordsFlag = &nm3
+		countFlag = &blt
+
+		output,err := captureOutputWithError(run)
+		if err != nil {
+			t.Errorf("expected no error, got %v", err)
+		}
+		if !strings.Contains(output, "ch)") {
+			t.Errorf("expected output to contain 'ch)', got %q", output)
+		}
+	})
+
+	t.Run("UnderscoreFlag", func(t *testing.T) {
+
+		versionFlag = &blf
+		helpFlag = &blf
+		digitsFlag = &nm3
+		wordsFlag = &nm3
+		underscoreFlag = &blt
+
+		output,err := captureOutputWithError(run)
+		if err != nil {
+			t.Errorf("expected no error, got %v", err)
+		}
+		if !strings.Contains(output, "_") {
+			t.Errorf("expected output to contain '_', got %q", output)
+		}
+	})
+
+
+	t.Run("NameFlag", func(t *testing.T) {
+		
+		versionFlag = &blf
+		helpFlag = &blf
+		digitsFlag = &nm3
+		wordsFlag = &nm3
+		nameFlag = &blt
+		underscoreFlag = &blf
+
+		output,err := captureOutputWithError(run)
+		if err != nil {
+			t.Errorf("expected no error, got %v", err)
+		}
+		if !strings.Contains(output, "-") {
+			t.Errorf("expected output to contain '-', got %q", output)
+		}
+	})
+
+	t.Run("HelpFlag", func(t *testing.T) {
+
+		versionFlag = &blf
+		helpFlag = &blt
+		digitsFlag = &nm3
+		wordsFlag = &nm3
+
+
+		output,err := captureOutputWithError(run)
+		if err != nil {
+			t.Errorf("expected no error, got %v", err)
+		}
+		if !strings.Contains(output, "Usage:") {
+			t.Errorf("expected output to contain 'Usage:', got %q", output)
+		}
+	})
+
+
+}

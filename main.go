@@ -12,11 +12,30 @@ import (
 
 const version = "0.1.1"
 
+var (
+	digitsFlag     *int 
+	wordsFlag      *int
+	versionFlag    *bool
+	helpFlag       *bool
+	countFlag      *bool
+	nameFlag       *bool
+	underscoreFlag *bool
+)
+
 func main() {
 
 	flag.Usage = func() {
 		Usage()
 	}
+
+	digitsFlag = flag.Int("d", 3, "Number of digits to append")
+	wordsFlag = flag.Int("w", 3, "Number of words in the phrase")
+	versionFlag = flag.Bool("v", false, "Print version information and exit")
+	helpFlag = flag.Bool("h", false, "Print usage and exit")
+	countFlag = flag.Bool("c", false, "Show character count")
+	nameFlag = flag.Bool("n", false, "Use a name in the phrase")
+	underscoreFlag = flag.Bool("u", false, "Use underscores instead of dashes")
+	flag.Parse()
 
 	err := run()
 	if err != nil {
@@ -28,20 +47,12 @@ func main() {
 // Main execution function
 func run() error { 
 
-	digits := flag.Int("d", 3, "Number of digits to append")
-	words := flag.Int("w", 3, "Number of words in the phrase")
-	versionFlag := flag.Bool("v", false, "Print version information and exit")
-	helpFlag := flag.Bool("h", false, "Print usage and exit")
-	count := flag.Bool("c", false, "Show character count")
-	name := flag.Bool("n", false, "Use a name in the phrase")
-	underscore := flag.Bool("u", false, "Use underscores instead of dashes")
-	flag.Parse()
 
-	if *words < 1 {
+	if *wordsFlag < 1 {
 		return fmt.Errorf("number of words must be at least 1")
 	}
 
-	if *digits < 1 {
+	if *digitsFlag < 1 {
 		return fmt.Errorf("number of digits must be at least 1")
 	}
 
@@ -57,19 +68,19 @@ func run() error {
 
 	var dashphrase string
 
-	if *name {
-		dashphrase = getNamedDashPhrase(*words, *digits)
+	if *nameFlag {
+		dashphrase = getNamedDashPhrase(*wordsFlag, *digitsFlag)
 	} else {
-		dashphrase = getDashPhrase(*words, *digits)
+		dashphrase = getDashPhrase(*wordsFlag, *digitsFlag)
 	}
 
-	if *count {
+	if *countFlag {
 		dashphrase = fmt.Sprintf("%s\t\t(%d ch)", dashphrase, len(dashphrase))
 	}
 
 	dashphrase = string(dashphrase[0]-32) + dashphrase[1:] // capitalize first char
 
-	if *underscore {
+	if *underscoreFlag {
 		dashphrase = strings.ReplaceAll(dashphrase, "-", "_")
 	}
 
