@@ -1,0 +1,9 @@
+.env
+dashphrase
+dashphrase*.exe
+dashphrase.zip
+dashphrase.tgz
+dashphrase_*.zip
+dashphrase_*.tgz
+# Added by goreleaser init:
+dist/
