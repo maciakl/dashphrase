@@ -5,5 +5,6 @@ dashphrase.zip
 dashphrase.tgz
 dashphrase_*.zip
 dashphrase_*.tgz
+coverage*
 # Added by goreleaser init:
 dist/
