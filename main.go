@@ -10,7 +10,7 @@ import (
 "github.com/wordgen/wordlists"
 )
 
-const version = "0.1.3"
+const version = "0.1.4"
 
 var (
 	digitsFlag     *int 
@@ -138,7 +138,7 @@ func getNamedDashPhrase(words int, digits int) (string, error) {
 func getNum(digits int) (string, error) {
 
 	if digits < 1 || digits > 999 {
-		return "", fmt.Errorf("number of digits must be between 1 and 20")
+		return "", fmt.Errorf("number of digits must be between 1 and 999")
 	}
 
 	num := ""
