@@ -31,7 +31,7 @@ tidy:
 # run tests
 [group('test')]
 test: build
-	go test -v
+	clrz go test -v
 
 # calculate test coverage
 [group('test')]
